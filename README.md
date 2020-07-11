@@ -4,12 +4,12 @@
 
 ### Hot Reload
 ```
-gitbook serve ./ ./blog
+gitbook serve ./_md ./blog
 ```
 
 ### Build Packages
 ```
-gitbook build ./ ./blog
+gitbook serve ./_md ./blog
 ```
 
 ### Visit on Website
