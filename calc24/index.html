@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculate 24 Points</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            background-color: #e9ecef;
+        }
+
+        #app {
+            padding-top: 2em;
+        }
+
+        .numbers-container {
+            margin: 2em 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .number-item {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #cccccc;
+            color: #666;
+            font-size: 64px;
+            text-align: center;
+            outline: none;
+        }
+
+        .number-item:focus {
+            border-color: orange;
+        }
+
+        .number-item.empty {
+            background: url('./question-mark.svg') no-repeat center;
+            background-size: contain;
+        }
+
+        .tip {
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+<div class="jumbotron" id="app">
+    <h1 class="display-4">Calculate 24 Points</h1>
+    <p class="lead">任意使用「加」「减」「乘」「除」「括号」对四个数字（1-12范围内整数）组进行组合运算，最终得到结果 24。每个数字必须都用上，并且只能使用一次</p>
+    <hr class="my-4">
+    <a class="btn btn-success btn-lg" href="#" role="button" @click="setRandom">随机出题</a>
+    <a class="btn btn-danger btn-lg" href="#" role="button" @click="setClassic">高难度题目</a>
+
+    <div class="numbers-container">
+        <input class="number-item" v-for="number in numbers" :class="{'empty': !number.value}"
+               v-model="number.value" maxlength="2" @focus="selectText">
+    </div>
+
+    <div>
+        <a class="btn btn-info" href="#" role="button" @click="viewHelp">查看提示</a>
+        <p class="tip">
+            {{ tip }}
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    var globalTip = null;
+
+    new Vue({
+        el: '#app',
+        data: {
+            numbers: [{value: ''}, {value: ''}, {value: ''}, {value: ''}],
+            problems: [
+                [1, 3, 4, 6],
+                [1, 4, 5, 6],
+                [1, 5, 5, 5],
+                [1, 6, 6, 8],
+                [3, 3, 7, 7],
+                [2, 3, 5, 12],
+                [6, 9, 9, 10],
+            ],
+            tip: '',
+        },
+        methods: {
+            setNumbers(arr) {
+                this.numbers = arr.map(i => ({value: i}));
+            },
+            setRandom() {
+                let arr = [];
+                for (let i = 0; i <= 3; i++) {
+                    let number = 1 + parseInt(Math.random() * 12);
+                    arr.push(number);
+                }
+
+                this.setNumbers(arr);
+            },
+            setClassic() {
+                let arr = this.problems[parseInt(Math.random() * this.problems.length)];
+                this.setNumbers(arr);
+            },
+            selectText(e) {
+                let input = e.target;
+                input.selectionStart = 0;
+                input.selectionEnd = input.value.length;
+            },
+            viewHelp() {
+                globalTip = null;
+
+                let arr = this.numbers.map(i => parseInt(i.value));
+                console.log(arr);
+                split(arr, 24);
+
+                if (!globalTip) {
+                    this.tip = '此题无解';
+                    return;
+                }
+
+                let t = globalTip;
+                let str = '';
+                if (Array.isArray(t.left)) {
+                    t.left = `{${t.left.join(',')}}`
+                }
+                if (Array.isArray(t.right)) {
+                    if (t.rop === '--') {
+                        t.right = `(${t.right[1]} - ${t.right[0]})`;
+                    } else if (t.rop === '//') {
+                        t.right = `(${t.right[1]} / ${t.right[0]})`;
+                    } else {
+                        t.right = `(${t.right[0]} ${t.rop} ${t.right[1]})`;
+                    }
+                }
+
+                if (t.op === '--') {
+                    str = `${t.right} - ${t.left}`;
+                } else if (t.op === '//') {
+                    str = `${t.right} // ${t.left}`;
+                } else {
+                    str = `${t.left} ${t.op} ${t.right}`;
+                }
+
+                let tip = str + ' = ' + t.result;
+                this.tip = tip;
+            }
+        },
+        mounted() {
+
+        }
+    });
+
+    /**
+     * Calc to 24 with two number
+     * return their operator
+     * @param left
+     * @param right
+     * @param result
+     * @returns {string} operator
+     */
+    function calc(left, right, result) {
+        if (isEqual(left + right, result)) return '+';
+        if (isEqual(left - right, result)) return '-';
+        if (isEqual(right - left, result)) return '--';
+        if (isEqual(left * right, result)) return '*';
+        if (right !== 0 && isEqual(left / right, result)) return '/';
+        if (left !== 0 && isEqual(right / left, result)) return '//';
+
+        return '';
+    }
+
+    /**
+     * 判断两个数是否相等，在某个精度差以内即可
+     * @param a
+     * @param b
+     * @returns {boolean}
+     */
+    function isEqual(a, b) {
+        return Math.abs(a - b) < 0.000001;
+    }
+
+    /**
+     *
+     * @param arr
+     * @param result
+     * @returns {string}
+     */
+    function split(arr, result) {
+        if (result == Infinity || result == -Infinity) {
+            return;
+        }
+
+        if (arr.length === 2) {
+            let operator = calc(arr[0], arr[1], result);
+            if (operator) {
+                console.log(arr[0], operator, arr[1], '=>', result);
+            }
+            return operator;
+        }
+
+        // length: 3 - [a],[b,c]
+        // length: 4 - [a],[b,c,d]
+        // length: 4 - [(a,b)],[c,d]
+        if (arr.length === 3 || arr.length === 4) {
+            for (let i = 0; i < arr.length; i++) {
+                let left  = arr[i];
+                let rest = arr.slice(0);
+                rest.splice(i, 1);
+
+                let results = {
+                    '+': result - left,  // a + b
+                    '-': left - result,  // a - b
+                    '--': result + left,  // b - a
+                    '*': result / left,  // a * b
+                    '/': left / result,  // a / b
+                    '//': result * left,  // b / a
+                };
+
+                // console.log(results);
+
+                for (let k in results) {
+                    // console.log(rest, results[k]);
+                    let rt = split(rest, results[k]);
+                    // console.log('for...');
+
+                    if (rt) {
+                        console.log(left, k, rest, rt, '=>', result);
+
+                        if (!globalTip) {
+                            globalTip = {
+                                left: left,
+                                op: k,
+                                right: rest,
+                                rop: rt,
+                                result: result
+                            };
+                        }
+                    }
+                }
+            }
+
+            if (arr.length === 4) {
+
+                let leftArr = [
+                    [arr[0], arr[1]],
+                    [arr[0], arr[2]],
+                    [arr[0], arr[3]],
+                    [arr[1], arr[2]],
+                    [arr[1], arr[3]],
+                    [arr[2], arr[3]],
+                ];
+
+                let restArr = [
+                    [arr[2], arr[3]],
+                    [arr[1], arr[3]],
+                    [arr[1], arr[2]],
+                    [arr[0], arr[3]],
+                    [arr[0], arr[2]],
+                    [arr[0], arr[1]],
+                ];
+
+                for (let i = 0; i < leftArr.length; i++) {
+                    let left  = leftArr[i];
+                    let rest = restArr[i];
+
+                    let leftResults = {
+                        '+': left[0] + left[1],
+                        '-': left[0] - left[1],
+                        '--': left[1] + left[0],
+                        '*': left[0] * left[1],
+                        '/': left[0] / left[1],
+                        '//': left[1] / left[0],
+                    };
+
+                    for (let k in leftResults) {
+                        let leftResult = leftResults[k];
+
+                        let results = {
+                            '+': result - leftResult,  // a + b
+                            '-': leftResult - result,  // a - b
+                            '--': result + leftResult,  // b - a
+                            '*': result / leftResult,  // a * b
+                            '/': leftResult / result,  // a / b
+                            '//': result * leftResult,  // b / a
+                        };
+
+                        for (let m in results) {
+                            let rt = split(rest, results[m]);
+
+                            if (rt) {
+                                console.log(left, m, rest, rt, '=>', result);
+                                if (!globalTip) {
+                                    globalTip = {
+                                        left: left,
+                                        op: m,
+                                        right: rest,
+                                        rop: rt,
+                                        result: result
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+</script>
+</body>
+</html>
