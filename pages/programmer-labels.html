@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>程序员的印象标签</title>
+    <style>
+        .label {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="label" v-for="label in labels" :style="getRandomStyle()">{{ label }}</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            labels: ['秃头', '格子衬衫', '死宅', '直男', '闷骚', '爱打游戏', '戴眼镜', '找不到对象', '木讷',
+                '脚踩人字拖', '会修电脑', '邋遢', '没情趣', '加班多', '熬夜', '神秘', '双肩包', '颈椎病',
+                '发际线比工资高', '腰间盘比业绩突出']
+        },
+        methods: {
+            getRandomStyle() {
+                return {
+                    left: (100 + 600 * Math.random()) + 'px',
+                    top: (100 + 400 * Math.random()) + 'px',
+                    fontSize: (16 + 20 * Math.random()) + 'px',
+                    color: this.getRandomColor()
+                }
+            },
+            getRandomColor() {
+                let r = parseInt(192 * Math.random());
+                let g = parseInt(192 * Math.random());
+                let b = parseInt(192 * Math.random());
+                return `RGB(${r}, ${g}, ${b})`;
+            }
+        },
+        mounted() {
+
+        }
+    });
+</script>
+</body>
+</html>

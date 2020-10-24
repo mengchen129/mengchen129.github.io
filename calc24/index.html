@@ -18,6 +18,7 @@
 
         #app {
             padding-top: 2em;
+            padding-bottom: 0;
         }
 
         .numbers-container {
@@ -42,7 +43,7 @@
 
         .number-item.empty {
             background: url('./question-mark.svg') no-repeat center;
-            background-size: contain;
+            background-size: 80%;
         }
 
         .tip {
@@ -94,6 +95,7 @@
         methods: {
             setNumbers(arr) {
                 this.numbers = arr.map(i => ({value: i}));
+                this.tip = '';
             },
             setRandom() {
                 let arr = [];
@@ -143,7 +145,7 @@
                 if (t.op === '--') {
                     str = `${t.right} - ${t.left}`;
                 } else if (t.op === '//') {
-                    str = `${t.right} // ${t.left}`;
+                    str = `${t.right} / ${t.left}`;
                 } else {
                     str = `${t.left} ${t.op} ${t.right}`;
                 }
