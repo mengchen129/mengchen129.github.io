@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Calculate 24 Points</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         * {
@@ -49,11 +50,24 @@
         .tip {
             font-size: 32px;
         }
+
+        @media screen and (max-width: 450px) {
+            h1.display-4 {
+                font-size: 2.5rem;
+            }
+
+            .number-item {
+                width: 80px;
+                height: 80px;
+                font-size: 48px;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="jumbotron" id="app">
     <h1 class="display-4">Calculate 24 Points</h1>
+    <p class="text-muted">Made by Meng Chen</p>
     <p class="lead">任意使用「加」「减」「乘」「除」「括号」对四个数字（1-12范围内整数）组进行组合运算，最终得到结果 24。每个数字必须都用上，并且只能使用一次</p>
     <hr class="my-4">
     <a class="btn btn-success btn-lg" href="#" role="button" @click="setRandom">随机出题</a>
