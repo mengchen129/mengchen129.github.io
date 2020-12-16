@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Calculate 24 Points</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <style>
         * {
             margin: 0;
@@ -48,12 +48,26 @@
         }
 
         .tip {
-            font-size: 32px;
+            font-size: 1.8rem;
+            margin-top: 10px;
+        }
+
+        .flex-space-between {
+            display: flex;
+            justify-content: space-between;
         }
 
         @media screen and (max-width: 450px) {
             h1.display-4 {
-                font-size: 2.5rem;
+                font-size: 2.0rem;
+            }
+
+            .lead {
+                font-size: 1rem;
+            }
+
+            .tip {
+                font-size: 1.3rem;
             }
 
             .number-item {
@@ -66,12 +80,22 @@
 </head>
 <body>
 <div class="jumbotron" id="app">
-    <h1 class="display-4">Calculate 24 Points</h1>
-    <p class="text-muted">Made by Meng Chen</p>
-    <p class="lead">任意使用「加」「减」「乘」「除」「括号」对四个数字（1-12范围内整数）组进行组合运算，最终得到结果 24。每个数字必须都用上，并且只能使用一次</p>
+    <h1 class="display-4">{{ $t('title') }}</h1>
+    <p class="text-muted flex-space-between">
+        <span>Made by Mendel
+            <a href="https://github.com/mengchen129" target="_blank">
+                <svg t="1608089842725" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3525" width="24" height="24"><path d="M512 85.333333C276.266667 85.333333 85.333333 276.266667 85.333333 512a426.410667 426.410667 0 0 0 291.754667 404.821333c21.333333 3.712 29.312-9.088 29.312-20.309333 0-10.112-0.554667-43.690667-0.554667-79.445333-107.178667 19.754667-134.912-26.112-143.445333-50.133334-4.821333-12.288-25.6-50.133333-43.733333-60.288-14.933333-7.978667-36.266667-27.733333-0.554667-28.245333 33.621333-0.554667 57.6 30.933333 65.621333 43.733333 38.4 64.512 99.754667 46.378667 124.245334 35.2 3.754667-27.733333 14.933333-46.378667 27.221333-57.045333-94.933333-10.666667-194.133333-47.488-194.133333-210.688 0-46.421333 16.512-84.778667 43.733333-114.688-4.266667-10.666667-19.2-54.4 4.266667-113.066667 0 0 35.712-11.178667 117.333333 43.776a395.946667 395.946667 0 0 1 106.666667-14.421333c36.266667 0 72.533333 4.778667 106.666666 14.378667 81.578667-55.466667 117.333333-43.690667 117.333334-43.690667 23.466667 58.666667 8.533333 102.4 4.266666 113.066667 27.178667 29.866667 43.733333 67.712 43.733334 114.645333 0 163.754667-99.712 200.021333-194.645334 210.688 15.445333 13.312 28.8 38.912 28.8 78.933333 0 57.045333-0.554667 102.912-0.554666 117.333334 0 11.178667 8.021333 24.490667 29.354666 20.224A427.349333 427.349333 0 0 0 938.666667 512c0-235.733333-190.933333-426.666667-426.666667-426.666667z" fill="#000000" p-id="3526"></path></svg>
+            </a>
+        </span>
+        <select v-model="locale">
+            <option value="en">English</option>
+            <option value="cn">简体中文</option>
+        </select>
+    </p>
+    <p class="lead">{{ $t('rules') }}</p>
     <hr class="my-4">
-    <a class="btn btn-success btn-lg" href="#" role="button" @click="setRandom">随机出题</a>
-    <a class="btn btn-danger btn-lg" href="#" role="button" @click="setClassic">高难度题目</a>
+    <a class="btn btn-success" href="#" role="button" @click="setRandom">{{ $t('btn.random') }}</a>
+    <a class="btn btn-danger" href="#" role="button" @click="setClassic">{{ $t('btn.difficult') }}</a>
 
     <div class="numbers-container">
         <input class="number-item" v-for="number in numbers" :class="{'empty': !number.value}"
@@ -79,7 +103,7 @@
     </div>
 
     <div>
-        <a class="btn btn-info" href="#" role="button" @click="viewHelp">查看提示</a>
+        <a class="btn btn-info" href="#" role="button" @click="viewHelp">{{ $t('btn.view_tip') }}</a>
         <p class="tip">
             {{ tip }}
         </p>
@@ -87,13 +111,43 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-i18n/dist/vue-i18n.js"></script>
 <script>
 
     var globalTip = null;
 
+    // Vue-i18n Docs: http://kazupon.github.io/vue-i18n/
+    const i18n = new VueI18n({
+        locale: 'cn',
+        messages: {
+            en: {
+                title: 'Calculate 24 Points',
+                btn: {
+                    view_tip: 'View Tip',
+                    random: 'Random questions',
+                    difficult: 'Difficult questions'
+                },
+                rules: 'Arbitrarily use "plus", "minus", "multiply", "divide" and "parenthesis" to combine the four numbers (integers in the range of 1-12), and finally get the result of 24. Every number must be used and can only be used once.',
+                no_answer: 'This question has no answer.'
+            },
+            cn: {
+                title: '计算 24 点',
+                btn: {
+                    view_tip: '查看提示',
+                    random: '随机出题',
+                    difficult: '高难度题目'
+                },
+                rules: '任意使用「加」「减」「乘」「除」「括号」对四个数字（1-12范围内整数）组进行组合运算，最终得到结果 24。每个数字必须都用上，并且只能使用一次。',
+                no_answer: '此题无解'
+            }
+        }
+    });
+
     new Vue({
         el: '#app',
+        i18n,
         data: {
+            locale: '',
             numbers: [{value: ''}, {value: ''}, {value: ''}, {value: ''}],
             problems: [
                 [1, 3, 4, 6],
@@ -105,6 +159,11 @@
                 [6, 9, 9, 10],
             ],
             tip: '',
+        },
+        watch: {
+            locale: function(newValue) {
+                i18n.locale = newValue;
+            }
         },
         methods: {
             setNumbers(arr) {
@@ -137,7 +196,7 @@
                 split(arr, 24);
 
                 if (!globalTip) {
-                    this.tip = '此题无解';
+                    this.tip = this.$t('no_answer');
                     return;
                 }
 
@@ -169,7 +228,8 @@
             }
         },
         mounted() {
-
+            let lang = navigator.language.toLowerCase();
+            this.locale = lang.indexOf('zh') >= 0 ? 'cn' : 'en';
         }
     });
 
