@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cross Multiplication</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            background-color: #e9ecef;
+        }
+
+        #app {
+            padding: 2rem 2rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+
+        .equation {
+            font-size: 2rem;
+            font-style: italic;
+            margin-left: 1rem;
+        }
+
+        .input {
+            width: 48px;
+            height: 40px;
+            font-size: 24px;
+            text-align: center;
+            outline: none;
+            border: 2px solid #333;
+            margin-right: 24px;
+        }
+
+        .input:focus {
+            border-color: darkorange;
+        }
+
+        .input-container {
+            display: flex;
+            margin-left: 1rem;
+        }
+
+        .answer-container {
+            display: flex;
+            margin-left: 1rem;
+            flex-direction: row;
+            justify-content: space-between;
+            font-size: 2rem;
+            width: 180px;
+        }
+
+        .answer-line-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .answer-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diagonal-line {
+            width: 80%;
+            height: 2px;
+            background-color: #000;
+        }
+
+        .rotate-plus {
+            transform: rotate(25deg);
+        }
+
+        .rotate-minus {
+            transform: rotate(-25deg);
+        }
+
+        .color-orange {
+            color: darkorange;
+        }
+
+        .dis-flex {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .flex-space-between {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media screen and (max-width: 450px) {
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <h1 class="title">{{ $t('title') }}</h1>
+    <p class="text-muted flex-space-between">
+        <span>Made by Mendel
+            <a href="https://github.com/mengchen129" target="_blank">
+                <svg t="1608089842725" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3525" width="24" height="24"><path d="M512 85.333333C276.266667 85.333333 85.333333 276.266667 85.333333 512a426.410667 426.410667 0 0 0 291.754667 404.821333c21.333333 3.712 29.312-9.088 29.312-20.309333 0-10.112-0.554667-43.690667-0.554667-79.445333-107.178667 19.754667-134.912-26.112-143.445333-50.133334-4.821333-12.288-25.6-50.133333-43.733333-60.288-14.933333-7.978667-36.266667-27.733333-0.554667-28.245333 33.621333-0.554667 57.6 30.933333 65.621333 43.733333 38.4 64.512 99.754667 46.378667 124.245334 35.2 3.754667-27.733333 14.933333-46.378667 27.221333-57.045333-94.933333-10.666667-194.133333-47.488-194.133333-210.688 0-46.421333 16.512-84.778667 43.733333-114.688-4.266667-10.666667-19.2-54.4 4.266667-113.066667 0 0 35.712-11.178667 117.333333 43.776a395.946667 395.946667 0 0 1 106.666667-14.421333c36.266667 0 72.533333 4.778667 106.666666 14.378667 81.578667-55.466667 117.333333-43.690667 117.333334-43.690667 23.466667 58.666667 8.533333 102.4 4.266666 113.066667 27.178667 29.866667 43.733333 67.712 43.733334 114.645333 0 163.754667-99.712 200.021333-194.645334 210.688 15.445333 13.312 28.8 38.912 28.8 78.933333 0 57.045333-0.554667 102.912-0.554666 117.333334 0 11.178667 8.021333 24.490667 29.354666 20.224A427.349333 427.349333 0 0 0 938.666667 512c0-235.733333-190.933333-426.666667-426.666667-426.666667z" fill="#000000" p-id="3526"></path></svg>
+            </a>
+        </span>
+        <select v-model="locale">
+            <option value="en">English</option>
+            <option value="cn">简体中文</option>
+        </select>
+    </p>
+    <p id="rules" class="lead">{{ $t('rules') }}</p>
+    <hr>
+
+    <div class="dis-flex">
+        {{ $t('equation') }}
+        <div class="equation">
+            <span class="color-orange">{{a}}</span>x<sup>2</sup> + <span class="color-orange">{{b}}</span>x + <span class="color-orange">{{c}}</span> = 0
+        </div>
+    </div>
+    <div class="dis-flex">
+        {{ $t('type_in') }}
+        <div class="input-container">
+            <input type="tel" class="input" placeholder="a" maxlength="3" v-model.number="a" @focus="selectText">
+            <input type="tel" class="input" placeholder="b" maxlength="3" v-model.number="b" @focus="selectText">
+            <input type="tel" class="input" placeholder="c" maxlength="3" v-model.number="c" @focus="selectText">
+        </div>
+
+        <button type="button" class="btn btn-success" @click="solve">{{ $t('solve') }}</button>
+    </div>
+
+    <template v-if="answer.length">
+        <div class="dis-flex">
+            {{ $t('process') }}
+            <div class="answer-container">
+                <div class="answer-column">
+                    <span><span class="color-orange">{{ answer[0][0] }}</span>x</span>
+                    <span><span class="color-orange">{{ answer[0][1] }}</span>x</span>
+                </div>
+                <div class="answer-line-container">
+                    <div class="diagonal-line rotate-plus"></div>
+                    <div class="diagonal-line rotate-minus"></div>
+                </div>
+                <div class="answer-column">
+                    <span class="color-orange">{{ answer[1][0] }}</span>
+                    <span class="color-orange">{{ answer[1][1] }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="dis-flex">
+            {{ $t('result') }}
+            <div class="equation">{{ resultFormula }}</div>
+        </div>
+    </template>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-i18n/dist/vue-i18n.js"></script>
+<script>
+    // Vue-i18n Docs: http://kazupon.github.io/vue-i18n/
+    const i18n = new VueI18n({
+        locale: 'cn',
+        messages: {
+            en: {
+                title: 'Cross Multiplication',
+                rules: 'Use cross multiplication to solve quadratic equations in one variable',
+                equation: 'Equation',
+                type_in: 'Type In',
+                solve: 'Solve',
+                process: 'Process',
+                result: 'Result',
+                no_answer: 'It has no answer.',
+                type_check: 'Please type in correct a,b,c',
+            },
+            cn: {
+                title: '十字相乘法',
+                rules: '用十字相乘法求解一元二次方程',
+                equation: '方程',
+                type_in: '输入',
+                solve: '求解',
+                process: '过程',
+                result: '结果',
+                no_answer: '此题无解.',
+                type_check: '请填写正确的 a,b,c',
+            }
+        }
+    });
+
+    window.vm = new Vue({
+        el: '#app',
+        i18n,
+        data: {
+            locale: '',
+            a: 'a',
+            b: 'b',
+            c: 'c',
+            answer: [],
+        },
+        watch: {
+            locale: function(newValue) {
+                i18n.locale = newValue;
+            }
+        },
+        computed: {
+            // 最终因式组合结果
+            resultFormula() {
+                if (!this.answer.length) return '';
+
+                let formula1 = this.getReadableFactor(this.answer[0][0], this.answer[1][0]);
+                let formula2 = this.getReadableFactor(this.answer[0][1], this.answer[1][1]);
+
+                return `${formula1}${formula2} = 0`;
+            }
+        },
+        methods: {
+            selectText(e) {
+                let input = e.target;
+                input.selectionStart = 0;
+                input.selectionEnd = input.value.length;
+            },
+            // 可读形式的因式 (ax + b)
+            getReadableFactor(a, b) {
+                let op = b > 0 ? '+' : '-';
+                a = (a === 1) ? '' : (a === -1) ? '-' : a;
+                return `(${a}x ${op} ${Math.abs(b)})`;
+            },
+            solve() {
+                if (!(isInteger(this.a) && isInteger(this.b) && isInteger(this.c))) {
+                    alert(this.$t('type_check'));
+                    return;
+                }
+
+                let answers = [];
+
+                let factorsA = getFactorArray(this.a);
+                let factorsC = getFactorArray(this.c);
+
+                for (let i = 0; i < factorsA.length; i++) {
+                    let itemA = factorsA[i];
+
+                    for (let j = 0; j < factorsC.length; j++) {
+                        let itemC = factorsC[j];
+
+                        // 十字交叉相乘判断
+                        if (itemA[0] * itemC[1] + itemA[1] * itemC[0] === this.b) {
+                            console.log(itemA, itemC);
+                            answers.push([itemA, itemC])
+                        }
+                    }
+                }
+
+                if (!answers.length) {
+                    alert(this.$t('no_answer'));
+                    this.answer = [];
+                    return;
+                }
+
+                // 取第一个解作为正确答案，并拼接成因式相乘的形式
+                this.answer = answers[0];
+
+            }
+        },
+        mounted() {
+            let lang = navigator.language.toLowerCase();
+            this.locale = lang.indexOf('zh') >= 0 ? 'cn' : 'en';
+        }
+    });
+
+    /**
+     * 判断一个数字是否是整数
+     * @param num
+     * @returns {boolean}
+     */
+    function isInteger(num) {
+        return !isNaN(num) && num % 1 === 0;
+    }
+
+    /**
+     * 获取一个数的所有因子组合
+     * @param num
+     * @returns {[]}
+     */
+    function getFactorArray(num) {
+        let arr = [];
+
+        for (let i = 1; i <= Math.abs(num); i++) {
+            let j = num / i;
+            if (isInteger(j)) {
+                arr.push([i, j]);
+                arr.push([-i, -j]);
+            }
+        }
+
+        return arr;
+    }
+
+</script>
+</body>
+</html>
