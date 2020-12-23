@@ -163,7 +163,7 @@
         </div>
         <div class="dis-flex">
             {{ $t('result') }}
-            <div class="equation">{{ resultFormula }}</div>
+            <div class="equation" v-html="resultFormula"></div>
         </div>
     </template>
 </div>
@@ -223,7 +223,12 @@
                 let formula1 = this.getReadableFactor(this.answer[0][0], this.answer[1][0]);
                 let formula2 = this.getReadableFactor(this.answer[0][1], this.answer[1][1]);
 
-                return `${formula1}${formula2} = 0`;
+                let result = `${formula1}${formula2} = 0`;
+                if (formula1 === formula2) {
+                    result = `${formula1}<sup>2</sup> = 0`;     // 完全平方公式，有角标，需要用 v-html 绑定
+                }
+
+                return result;
             }
         },
         methods: {
